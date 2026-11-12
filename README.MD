@@ -6,6 +6,12 @@ The PDA Visualizer is an interactive simulation of a Pushdown Automaton (PDA) de
 
 The project demonstrates how a PDA uses a stack to process nested structures and determine whether an input expression is valid according to bracket-matching rules.
 
+## Live Demo
+
+The PDA Visualizer is deployed and accessible online.
+
+**Live Application:** [PDA Visualizer](https://pda-visualizer.onrender.com/)
+
 ## Objectives
 
 - Demonstrate the working of a Pushdown Automaton.
