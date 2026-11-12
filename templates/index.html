@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDA Visualizer | Bracket Balancing Engine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+
+        <header class="header">
+            <div class="brand">
+                <div class="brand-icon">Π</div>
+                <div>
+                    <h1>PDA Visualizer</h1>
+                    <p>Interactive Brackets &amp; Parentheses Balancing Engine</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="status-dot"></span>
+                PDA ENGINE READY
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <section class="intro">
+                <span class="eyebrow">THEORY OF COMPUTATION · PUSHDOWN AUTOMATA</span>
+                <h2>Watch the stack think.</h2>
+                <p>Explore how a Pushdown Automaton uses a stack to validate nested brackets.</p>
+            </section>
+
+            <!-- INPUT SECTION -->
+            <section class="panel input-panel">
+                <div class="section-heading">
+                    <div>
+                        <h3>Input expression</h3>
+                        <p>Enter an expression containing (), {}, or []. Other characters are ignored.</p>
+                    </div>
+                    <span class="tag">INPUT</span>
+                </div>
+
+                <textarea
+                    id="expressionInput"
+                    placeholder="Example: {[a+b]*(c-d)}"
+                    spellcheck="false"
+                ></textarea>
+
+                <div class="input-info">
+                    <span>Opening brackets are pushed; matching closing brackets are popped.</span>
+                    <span id="charCount">0 characters</span>
+                </div>
+
+                <div class="control-row">
+                    <button id="runBtn" class="button button-primary">
+                        ↳ Prepare simulation
+                    </button>
+
+                    <button id="resetBtn" class="button button-reset">
+                        Reset ↺
+                    </button>
+                </div>
+
+                <p id="errorMessage" class="error-message hidden" role="alert"></p>
+            </section>
+
+            <!-- STATUS CARDS -->
+            <section class="status-grid">
+
+                <article class="panel status-card">
+                    <span class="card-label">CURRENT STATE</span>
+                    <h3 id="currentState">q0</h3>
+                    <span class="card-description">PDA state</span>
+                </article>
+
+                <article class="panel status-card">
+                    <span class="card-label">STEP COUNT</span>
+                    <h3 id="stepCount">0</h3>
+                    <span class="card-description">Transitions executed</span>
+                </article>
+
+                <article class="panel status-card">
+                    <span class="card-label">CURRENT ACTION</span>
+                    <h3 id="currentAction">WAITING</h3>
+                    <span class="card-description">Latest stack operation</span>
+                </article>
+
+                <article class="panel status-card">
+                    <span class="card-label">FINAL RESULT</span>
+                    <h3 id="finalResult">PENDING</h3>
+                    <span class="card-description">Results</span>
+                </article>
+
+            </section>
+
+            <!-- STACK SIMULATION -->
+            <section class="panel simulator-panel">
+
+                <div class="section-heading">
+                    <div>
+                        <h3>Stack simulation</h3>
+                        <p>Each block represents one symbol stored in the PDA stack.</p>
+                    </div>
+                    <span class="tag">LIVE STACK</span>
+                </div>
+
+                <div class="progress-area">
+                    <div class="progress-meta">
+                        <span>EXECUTION PROGRESS</span>
+                        <span id="progressText">0%</span>
+                    </div>
+
+                    <div class="progress-track">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                </div>
+
+                <div class="simulator-grid">
+
+                    <!-- U-SHAPED STACK -->
+                    <div class="stack-stage">
+
+                        <div class="stage-topline">
+                            <span>STACK CONTENTS</span>
+                            <span id="stackDepthLabel">DEPTH 01</span>
+                        </div>
+
+                        <div class="stack-scene">
+                            <div class="stack-walls">
+                                <div class="stack-visual" id="stackVisual">
+                                    <div class="stack-item bottom-marker">Z0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stack-legend">
+                            <span>
+                                <i class="legend-dot sage"></i>
+                                Stack symbol
+                            </span>
+                            <span>
+                                <i class="legend-dot gold"></i>
+                                Bottom marker
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <!-- STACK INSPECTOR -->
+                    <aside class="stack-inspector">
+
+                        <div class="inspector-block">
+                            <span class="readout-label">TOP OF STACK</span>
+                            <strong id="stackTop">Z0</strong>
+                            <small>Next symbol available to the PDA</small>
+                        </div>
+
+                        <div class="inspector-rule"></div>
+
+                        <div class="inspector-block">
+                            <span class="readout-label">STACK SIZE</span>
+                            <strong id="stackSize">1</strong>
+                            <small>Including the permanent Z0 marker</small>
+                        </div>
+
+                        <div class="inspector-note">
+                            <span class="note-icon">↳</span>
+                            <p>
+                                <b>Last in, first out.</b><br>
+                                The most recently pushed opening bracket must be matched first.
+                            </p>
+                        </div>
+
+                        <!-- CONTROLS BESIDE STACK -->
+                        <div class="simulation-controls">
+
+                            <span class="section-index">SIMULATION CONTROLS</span>
+
+                            <button id="stepBtn" class="button button-step" disabled>
+                                Next step <span>→</span>
+                            </button>
+
+                            <div class="secondary-controls">
+                                <button id="prevBtn" class="button button-quiet" disabled>
+                                    ← Previous
+                                </button>
+
+                                <button id="autoBtn" class="button button-quiet" disabled>
+                                    Run all ↗
+                                </button>
+                            </div>
+
+                            <button id="pauseBtn" class="button button-quiet" disabled>
+                                Ⅱ Pause
+                            </button>
+
+                        </div>
+
+                    </aside>
+
+                </div>
+            </section>
+
+            <!-- INPUT TAPE -->
+            <section class="panel tape-panel">
+
+                <div class="section-heading">
+                    <div>
+                        <h3>Input tape</h3>
+                        <p>The highlighted character is currently being processed.</p>
+                    </div>
+                    <span class="tag">READ HEAD</span>
+                </div>
+
+                <div id="inputTape" class="input-tape">
+                    <p class="placeholder-text">Your expression will appear here.</p>
+                </div>
+
+                <div class="transition-grid">
+
+                    <div class="transition-card">
+                        <span class="info-label">READ SYMBOL</span>
+                        <strong id="readSymbol">—</strong>
+                    </div>
+
+                    <div class="transition-card">
+                        <span class="info-label">STACK ACTION</span>
+                        <strong id="transitionAction">—</strong>
+                    </div>
+
+                    <div class="transition-card transition-message-card">
+                        <span class="info-label">TRANSITION EXPLANATION</span>
+                        <p id="transitionMessage">Waiting for execution.</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- RESULT -->
+            <section id="resultPanel" class="panel result-panel">
+                <div>
+                    <span class="eyebrow">SIMULATION OUTCOME</span>
+                    <h3 id="resultHeading">Awaiting execution</h3>
+                    <p id="resultMessage">
+                        Enter an expression and prepare the simulation.
+                    </p>
+                </div>
+            </section>
+
+            <!-- EXECUTION HISTORY -->
+            <section class="panel history-panel">
+
+                <div class="section-heading">
+                    <div>
+                        <h3>Execution history</h3>
+                        <p>Backend-generated PDA transitions, displayed one step at a time.</p>
+                    </div>
+                    <span class="tag">TRACE</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Input</th>
+                                <th>State</th>
+                                <th>Action</th>
+                                <th>Stack after</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="historyBody">
+                            <tr>
+                                <td colspan="5" class="empty-history">
+                                    No execution history available.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </main>
+
+        <footer class="footer">
+            PDA Visualizer · Pure stack-based simulation
+        </footer>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
